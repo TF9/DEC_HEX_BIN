@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -11,12 +12,19 @@ namespace DEC_HEX_BIN
         public Form1()
         {
             InitializeComponent();
+            // fix hight of the form
+            this.MaximumSize = new Size(Int32.MaxValue, 130); 
+            this.MinimumSize  = new Size(300, 130);
         }
 
         private string Bin2Dec(string text)
         {
+            /* Convert a binary string into a decimal string:
+             * start from low digit
+             * if digit is '1' the actual value of 'power of 2' is added to the result.
+             */
             string result = "0";
-            string a = "1";
+            string pwOf2 = "1";
             int i = text.Length - 1;
             char[] charArray = text.ToCharArray();
 
@@ -24,9 +32,9 @@ namespace DEC_HEX_BIN
             {
                 if (charArray[i] == '1')
                 {
-                    result = Sum(a, result);
+                    result = Sum(pwOf2, result);
                 }
-                a = Sum(a, a);
+                pwOf2 = Sum(pwOf2, pwOf2);
                 --i;
             }
             return result;
@@ -34,6 +42,11 @@ namespace DEC_HEX_BIN
 
         private string Dec2Bin(string text)
         {
+            /* Convert a decimal string into a binary string:
+             * loopwise:
+             * - if the lowest digit is odd, set a '1' else a '0' at the front of the result string
+             * - divide the string by '2' -> next
+             */
             if (text == "0")
                 return "0";
             string num = text;
@@ -49,6 +62,8 @@ namespace DEC_HEX_BIN
 
         private int OddsToOne(string s)
         {
+            /* check if the last digit in a string is odd (return '1') or even (return '0') 
+              */
             switch (s.Last())
             {
                 case '1':
@@ -64,8 +79,14 @@ namespace DEC_HEX_BIN
 
         private string DivByTwo(string s)
         {
-            string new_s = string.Empty;
-            string new_dig;
+            /* Divide a decimal string by two without rest:
+             * start from highes digit
+             * - if the actual digit is odd keep rounding value ('5') for next loop
+             * - divide actual digit by two, add rounding value from last step ('5')
+             * - add digit at the end of string
+             */
+            string result = string.Empty;
+            string digit;
             int add = 0;
             char[] cs = s.ToCharArray();
             int i = 0;
@@ -73,31 +94,31 @@ namespace DEC_HEX_BIN
 
             while (i < len)
             {
-                new_dig = ((int.Parse(cs[i].ToString()) / 2) + add).ToString();
+                digit = ((int.Parse(cs[i].ToString()) / 2) + add).ToString();
                 add = OddsToOne(cs[i].ToString()) * 5;
-                new_s += new_dig;
+                result += digit;
                 ++i;
             }
-
-            while ((new_s.Length > 1) && (new_s.StartsWith("0")))
-            {
-                new_s = new_s.Remove(0, 1);
-            }
-            return new_s;
+            // remove leading 0 anreturn result
+            return result.TrimStart('0').PadLeft(1, '0');
         }
 
         string Sum(string a, string b)
         {
+            /* Summarize two decimal strings:
+             * strings a,b are not checked for valid deciml char
+             * must be done by caller
+             */
             int i = a.Length - 1;
             int k = b.Length - 1;
             int s1, s2;
             int step;
-            int rest = 0;
+            int trans = 0;
             string result = string.Empty;
             char[] c_a = a.ToCharArray();
             char[] c_b = b.ToCharArray();
 
-            while (((i >= 0) || (k >= 0) || (rest > 0)))
+            while (((i >= 0) || (k >= 0) || (trans > 0)))
             {
                 s1 = 0;
                 s2 = 0;
@@ -110,10 +131,10 @@ namespace DEC_HEX_BIN
                     s2 = int.Parse(c_a[i].ToString());
                 }
 
-                step = s1 + s2 + rest;
-                rest = step / 10;
-                step %= 10;
-                result = step + result;
+                step = s1 + s2 + trans;
+                trans = step / 10;      // get the tens digit for next loop
+                step %= 10;             // get unit digit
+                result = step + result; // store unit in front of result string
                 --k;
                 --i;
             }
@@ -122,6 +143,10 @@ namespace DEC_HEX_BIN
 
         string Bin2Hex(string bin)
         {
+            /* Convert a binary string into a HEX-string
+             * - convert a binary nibble (from low to high) into HEX-expression value 
+             * - add the mapping value at the front of the result string
+             */
             char[] map = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', };
 
             int i = bin.Length;
@@ -146,6 +171,11 @@ namespace DEC_HEX_BIN
 
         string HexBin2(string hex)
         {
+            /* Convert a HEX-string to a binary string (lower case char are allowed.)
+             * No check of input string for valid characters.
+             * - each digit is mapped via mapping table to its binary expression (low to high)
+             * - add the result of each step to the front of the result string
+             */
             var map = new Dictionary<char, string>()
             {
                 { '0',"0000" },
@@ -181,6 +211,7 @@ namespace DEC_HEX_BIN
         {
             if (String.IsNullOrEmpty(((MaskedTextBox)sender).Text))
             {
+                // deleted content - clear all
                 tbDec.Text = string.Empty;
                 tbBin.Text = string.Empty;
                 tbHex.Text = string.Empty;
@@ -189,6 +220,7 @@ namespace DEC_HEX_BIN
 
             if (keyHandled == false)
             {
+                // valid character is pressed
                 string s = ((MaskedTextBox)sender).Text;
                 s = s.TrimStart('0').PadLeft(1, '0');
                 ((MaskedTextBox)sender).Text = s;
@@ -210,16 +242,7 @@ namespace DEC_HEX_BIN
             }
             else
             {
-                // Stop the character from being entered into the control since it is non-numerical.
-                e.Handled = true;
-            }
-        }
-
-        private void tb_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (keyHandled == true)
-            {
-                // Stop the character from being entered into the control since it is non-numerical.
+                // The character which is pressed is not within the specific range
                 e.Handled = true;
             }
         }
@@ -257,24 +280,27 @@ namespace DEC_HEX_BIN
 
         private void tbBin_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            /* check the input for binary text-box:
+             * [0 or 1 or special keys]
+             */
             // Initialize the flag to false.
             keyHandled = false;
 
-            // Determine whether the keystroke is a number from the top of the keyboard.
+            // Determine whether the keystroke is '0' or '1' from the top of the keyboard.
             if (e.KeyCode < Keys.D0 || e.KeyCode > Keys.D1)
             {
-                // Determine whether the keystroke is a number from the keypad.
+                // Determine whether the keystroke is '0' or '1' from the keypad.
                 if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad1)
                 {
-                    // Determine whether the keystroke is a valid special key.
+                    // Determine whether the keystroke is a valid special key (-combination).
                     if (!SpecialKeyOk(e.KeyCode, e.Modifiers))
                     {
+                        // feedback user for wrong input: short red flash
                         System.Drawing.Color colr = tbBin.BackColor;
                         tbBin.BackColor = System.Drawing.Color.Salmon;
                         tbBin.Update();
                         System.Threading.Thread.Sleep(100);
                         tbBin.BackColor = colr;
-                        // A non-numerical keystroke was pressed.
                         // Set the flag to true and evaluate in KeyPress event.
                         keyHandled = true;
                     }
@@ -284,6 +310,9 @@ namespace DEC_HEX_BIN
 
         private void tbDec_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            /* check the input for decimal text-box:
+             * [0 to 9 or special keys]
+             */
             // Initialize the flag to false.
             keyHandled = false;
 
@@ -293,15 +322,15 @@ namespace DEC_HEX_BIN
                 // Determine whether the keystroke is a number from the keypad.
                 if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad9)
                 {
-                    // Determine whether the keystroke is a valid special key.
+                    // Determine whether the keystroke is a valid special key (-combination).
                     if (!SpecialKeyOk(e.KeyCode, e.Modifiers))
                     {
+                        // feedback user for wrong input: short red flash
                         System.Drawing.Color colr = tbDec.BackColor;
                         tbDec.BackColor = System.Drawing.Color.Salmon;
                         tbDec.Update();
                         System.Threading.Thread.Sleep(100);
                         tbDec.BackColor = colr;
-                        // A non-numerical keystroke was pressed.
                         // Set the flag to true and evaluate in KeyPress event.
                         keyHandled = true;
                     }
@@ -311,6 +340,9 @@ namespace DEC_HEX_BIN
 
         private void tbHex_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            /* check the input for hexadecimal text-box:
+             * [0 to 9 or A to F or special keys]
+             */
             // Initialize the flag to false.
             keyHandled = false;
             // Determine whether the keystroke is a number from the top of the keyboard.
@@ -319,17 +351,18 @@ namespace DEC_HEX_BIN
                 // Determine whether the keystroke is a number from the keypad.
                 if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad9)
                 {
+                    // Determine whether the keystroke is a valid letter from the keypad.
                     if (e.KeyCode < Keys.A || e.KeyCode > Keys.F)
                     {
-                        // Determine whether the keystroke is a valid special key.
+                        // Determine whether the keystroke is a valid special key (-combination).
                         if (!SpecialKeyOk(e.KeyCode, e.Modifiers))
                         {
+                            // feedback user for wrong input: short red flash
                             System.Drawing.Color colr = tbHex.BackColor;
                             tbHex.BackColor = System.Drawing.Color.Salmon;
                             tbHex.Update();
                             System.Threading.Thread.Sleep(100);
                             tbHex.BackColor = colr;
-                            // A non-numerical keystroke was pressed.
                             // Set the flag to true and evaluate in KeyPress event.
                             keyHandled = true;
                         }

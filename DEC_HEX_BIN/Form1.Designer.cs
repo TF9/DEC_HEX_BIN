@@ -43,9 +43,8 @@
             this.tbDec.BackColor = System.Drawing.SystemColors.Window;
             this.tbDec.Location = new System.Drawing.Point(36, 12);
             this.tbDec.Name = "tbDec";
-            this.tbDec.Size = new System.Drawing.Size(353, 20);
+            this.tbDec.Size = new System.Drawing.Size(236, 20);
             this.tbDec.TabIndex = 3;
-            this.tbDec.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_KeyDown);
             this.tbDec.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tb_KeyPress);
             this.tbDec.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tb_KeyUp);
             this.tbDec.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.tbDec_PreviewKeyDown);
@@ -83,9 +82,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbHex.Location = new System.Drawing.Point(36, 66);
             this.tbHex.Name = "tbHex";
-            this.tbHex.Size = new System.Drawing.Size(353, 20);
+            this.tbHex.Size = new System.Drawing.Size(236, 20);
             this.tbHex.TabIndex = 7;
-            this.tbHex.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_KeyDown);
             this.tbHex.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tb_KeyPress);
             this.tbHex.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tb_KeyUp);
             this.tbHex.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.tbHex_PreviewKeyDown);
@@ -96,9 +94,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbBin.Location = new System.Drawing.Point(36, 39);
             this.tbBin.Name = "tbBin";
-            this.tbBin.Size = new System.Drawing.Size(353, 20);
+            this.tbBin.Size = new System.Drawing.Size(236, 20);
             this.tbBin.TabIndex = 8;
-            this.tbBin.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_KeyDown);
             this.tbBin.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tb_KeyPress);
             this.tbBin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tb_KeyUp);
             this.tbBin.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.tbBin_PreviewKeyDown);
@@ -107,7 +104,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(401, 99);
+            this.ClientSize = new System.Drawing.Size(284, 91);
             this.Controls.Add(this.tbBin);
             this.Controls.Add(this.tbHex);
             this.Controls.Add(this.label3);
