@@ -3,4 +3,4 @@ Base converter
 
 converter between decimal, hexadecimal binary numbers without limitation of length. 
 
-All calculations are 'text-based' (calculate in writing)
+All calculations are 'text-based' (calculate in writing) and in unlimited length
